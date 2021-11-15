@@ -17,18 +17,18 @@ British Atmospheric Data Centre.
 
 ```r
 source('nimrod.R')
+coast = read.csv('coast.csv')
 
-# read data (might have to specify the `nimrod_dir` option
+# read data 
+# assumes data has been stored locally (see below)
+# might have to specify the `nimrod_dir` option
 img = nimrod_read(from='2020-02-01', to='2020-02-05', by='60 min')
 
 # apply a bounding box (here: UK)
 img = nimrod_apply_bbox(img, xlim=c(-2e5, 8e5), ylim=c(-1e5,12e5))
 
-# get coast lines in nimrod region for plotting
-coast = read.csv('coast.csv')
-
 # animate the image collection
-nimrod_animate(img, coast=coast, fps=10)
+nimrod_animate(img, coast=coast)
 
 # plot a single image
 nimrod_plot(img[[1]])
@@ -36,10 +36,9 @@ lines(coast)
 ```
 
 
+# Details 
 
-# Details about NIMROD data
-
-## Download
+## Download NIMROD data
 
 - The entry point to the NIMROD data on CEDA is
   <https://catalogue.ceda.ac.uk/uuid/82adec1f896af6169112d09cc1174499>
@@ -49,7 +48,7 @@ lines(coast)
   - CEDA user name and password
   - Host: ftp.ceda.ac.uk 
   - Remote site: /badc/ukmo-nimrod/data/composite/uk-5km
-  - drag and drop folders to local folders triggers download
+  - download data by drag and drop 
 
 
 ## Local directory structure

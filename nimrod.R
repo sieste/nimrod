@@ -1,10 +1,9 @@
 # TODO: 
 # - warn if a file doesn't exist
-# - save coast line as list to remove dependencies on spatial packages
-# - export to file format suitable as tensorflow training data
-# - specify bbox by center and size
+# - export to file format suitable for NN training data
+# - option to specify bbox by center and size
 # - aggregation in time and space
-# - package and publish
+# - turn into R package 
 
 nimrod_read_dat = function(file_name) {
 
