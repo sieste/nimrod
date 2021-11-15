@@ -12,6 +12,8 @@ R functions to extract and visualise radar data from the NIMROD System.
 British Atmospheric Data Centre.
 <http://catalogue.ceda.ac.uk/uuid/82adec1f896af6169112d09cc1174499>**
 
+NOTE: At the moment, the code here assumes the 5km composite radar product.
+
 
 # Example
 
