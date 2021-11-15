@@ -119,9 +119,9 @@ nimrod_get_coast = function() {
   #                             do.call(rbind, 
   #                                     lapply(x, function(y) rbind(y,NA)))))
   # colnames(coast_xy) = c('x', 'y')
-  # write.csv(coast_xy, '/tmp/coast.csv', row.names=FALSE)
+  # write.csv(coast_xy, 'nimrod_coast.csv', row.names=FALSE)
 
-  coast = read.csv('coast.csv')
+  coast = read.csv('nimrod_coast.csv')
   return(coast) # can now be added to existing plot with `lines(coast)`
 }
 

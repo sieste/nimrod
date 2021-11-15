@@ -19,7 +19,7 @@ NOTE: At the moment, the code here assumes the 5km composite radar product.
 
 ```r
 source('nimrod.R')
-coast = read.csv('coast.csv')
+coast = read.csv('nimrod_coast.csv')
 
 # read data 
 # assumes data has been stored locally (see below)
