@@ -1,7 +1,5 @@
 # TODO: 
 # - warn if a file doesn't exist
-# - export to file format suitable for NN training data
-# - option to specify bbox by center and size
 # - aggregation in time and space
 # - turn into R package 
 
@@ -96,7 +94,7 @@ nimrod_read = function(from, to = from, by='15 min',
       R.utils::gunzip(tff, remove=TRUE, overwrite=TRUE)
       dff = gsub('\\.gz$', '', tff)
       dat = nimrod_read_dat(file_name = dff)
-      nam = format(as.POSIXct(paste(dat$header$data_time, collapse='-'),
+      nam = format(as.POSIXct(paste(dat[['header']][['data_time']], collapse='-'),
                              format='%Y-%m-%d-%H-%M'),
                    format='%Y-%m-%dT%H:%M')
       imgs[[ nam ]] = dat
@@ -129,27 +127,27 @@ nimrod_get_coast = function() {
 nimrod_apply_bbox = function(img, xlim=c(-2e5, 8e5), ylim=c(-1e5,12e5)) {
 
   img1 = img[[1]]
-  xy = expand.grid(x = seq(from=img1$header$x_lim[1], 
-                           to=img1$header$x_lim[2], 
-                           len=img1$header$n_col),
-                   y = rev(seq(from=img1$header$y_lim[1], 
-                               to=img1$header$y_lim[2], 
-                               len=img1$header$n_row)))
-  mask = (xy$x >= xlim[1] & xy$x <= xlim[2] & 
-          xy$y >= ylim[1] & xy$y <= ylim[2])
+  xy = expand.grid(x = seq(from=img1[['header']][['x_lim']][1], 
+                           to=img1[['header']][['x_lim']][2], 
+                           len=img1[['header']][['n_col']]),
+                   y = rev(seq(from=img1[['header']][['y_lim']][1], 
+                               to=img1[['header']][['y_lim']][2], 
+                               len=img1[['header']][['n_row']])))
+  mask = (xy[['x']] >= xlim[1] & xy[['x']] <= xlim[2] & 
+          xy[['y']] >= ylim[1] & xy[['y']] <= ylim[2])
 
   xymask = xy[mask, ]
-  n_col = length(unique(xymask$x))
-  n_row = length(unique(xymask$y))
-  x_lim = range(xymask$x)
-  y_lim = range(xymask$y)
+  n_col = length(unique(xymask[['x']]))
+  n_row = length(unique(xymask[['y']]))
+  x_lim = range(xymask[['x']])
+  y_lim = range(xymask[['y']])
 
   for (ii in 1:length(img)) {
-    img[[ii]]$data = img[[ii]]$data[ mask ]
-    img[[ii]]$header$n_col = n_col
-    img[[ii]]$header$n_row = n_row
-    img[[ii]]$header$x_lim = x_lim
-    img[[ii]]$header$y_lim = y_lim
+    img[[ii]][['data']] = img[[ii]][['data']][ mask ]
+    img[[ii]][['header']][['n_col']] = n_col
+    img[[ii]][['header']][['n_row']] = n_row
+    img[[ii]][['header']][['x_lim']] = x_lim
+    img[[ii]][['header']][['y_lim']] = y_lim
   }
   return(img)
 }
@@ -157,18 +155,18 @@ nimrod_apply_bbox = function(img, xlim=c(-2e5, 8e5), ylim=c(-1e5,12e5)) {
 
 nimrod_plot = function(img) {
 
-  xx = seq(from = img$header$x_lim[1], 
-           to = img$header$x_lim[2], 
-           len = img$header$n_col)
-  yy = seq(from = img$header$y_lim[1], 
-           to = img$header$y_lim[2], 
-           len = img$header$n_row)
-  imgmat = matrix(img$data, 
-                  nrow=img$header$n_row, 
-                  ncol=img$header$n_col, 
+  xx = seq(from = img[['header']][['x_lim']][1], 
+           to = img[['header']][['x_lim']][2], 
+           len = img[['header']][['n_col']])
+  yy = seq(from = img[['header']][['y_lim']][1], 
+           to = img[['header']][['y_lim']][2], 
+           len = img[['header']][['n_row']])
+  imgmat = matrix(img[['data']], 
+                  nrow=img[['header']][['n_row']], 
+                  ncol=img[['header']][['n_col']], 
                   byrow=TRUE)
-  imgmat[ imgmat == img$header$na_value ] = NA
-  titl =  format(as.POSIXct(paste(img$header$data_time, collapse='-'), 
+  imgmat[ imgmat == img[['header']][['na_value']] ] = NA
+  titl =  format(as.POSIXct(paste(img[['header']][['data_time']], collapse='-'), 
                             format='%Y-%m-%d-%H-%M'), '%Y-%m-%d %H:%M')
   image(xx, yy, t(apply(imgmat, 2, rev)), 
         main=titl, xlab='Easting', ylab='Northing',
@@ -187,12 +185,12 @@ nimrod_animate = function(nimrod_list, coast=NULL, fps=10, locator=FALSE) {
   for (img in nimrod_list) {
     dev.hold()
     nimrod_plot(img)
-    lines(coast)
+    lines(coast, col='#ffffff77')
     dev.flush()
     if (locator) {
       loc = locator(1)
       if(!is.null(loc)) {
-        cat(paste(img$header$data_time), loc$x, loc$y, '\n')
+        cat(paste(img[['header']][['data_time']]), loc[['x']], loc[['y']], '\n')
       }
     }
     Sys.sleep(1/fps)
